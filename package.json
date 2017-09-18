@@ -1,0 +1,19 @@
+{
+  "name": "dj-dps-parser",
+  "version": "1.0.0",
+  "description": "Data processing script parser converts dps to JSON structure",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/boldak/dj-dps-parser.git"
+  },
+  "author": "Andrey Boldak",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/boldak/dj-dps-parser/issues"
+  },
+  "homepage": "https://github.com/boldak/dj-dps-parser#readme"
+}
