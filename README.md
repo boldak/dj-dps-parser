@@ -1,2 +1,2 @@
 # dj-dps-parser
-Data Processing Script parser convert dps to json structure
+Data Processing Script parser converts dps to json structure
