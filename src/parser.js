@@ -169,7 +169,7 @@ ScriptParser.prototype.parse = function(str) {
         .replace(/\(/gim, ":")
         .replace(/\)/gim, "")
 
-    console.log(p)
+    // console.log(p)
 
     try {
         p = p
