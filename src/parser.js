@@ -1,14 +1,20 @@
 
-import util from "util";
+// TODO refactor all code
 
-import ParserError from "./exceptions/parserError";
-
+const util = require('util');
+const ParserError = require('./exceptions/parserError');
+const ParserUtils = require('./utils/parserUtils');
+const ErrorMapper = require('./utils/errorMapper');
 
 
 const valuesRE = /'((?:\\\\[\'bfnrt/\\\\]|\\\\u[a-fA-F0-9]{4}|[^\'\\\\])*)'|\"((?:\\\\[\"bfnrt/\\\\]|\\\\u[a-fA-F0-9]{4}|[^\"\\\\])*)\"/gim;
-const lineCommentRE = /\/\/[\w\S\ .\t\:\,;\'\"\(\)\{\}\[\]0-9-_]*(?:[\n\r]*)/gi;
+
+// tabs and newlines
 const lineRE = /[\r\n\t\s]*/gim;
+
+const lineCommentRE = /\/\/[\w\S\ .\t\:\,;\'\"\(\)\{\}\[\]0-9-_]*(?:[\n\r]*)/gi;
 const inlineCommentRE = /\/\*[\w\W\b\.\t\:\,;\'\"\(\)\{\}\[\]\*0-9-_]*(?:\*\/)/gim;
+
 const commandSplitRE = /(\))([a-zA-Z@])/gim;
 const nonbrackedParamsRE = /\(([\w\b\.\t\:\,\'\"0-9-_]+[\w\b\.\t\:\,\'\"\[\]\^0-9-_]*)\)/gi;
 const propertyNameRE = /((@[a-zA-Z\-_\.]+|[a-zA-Z\-_\.]+)(?=[\(\)\{\}\:\[\]\s]+))/gim;
@@ -52,110 +58,15 @@ class ScriptParser {
     parse(str) {
         const self = this;
 
-        // const lookup = (o, keywords) => {
-        //     keywords =  keywords || {};
-        //
-        //     if (util.isDate(o))
-        //         return o;
-        //
-        //
-        //     if (util.isString(o))
-        //         return ((keywords[o.toLowerCase()]) ? keywords[o.toLowerCase()] : o);
-        //
-        //
-        //     if (util.isArray(o)) {
-        //         const res = [];
-        //         o.forEach(item => {
-        //             res.push(lookup(item,keywords))
-        //         });
-        //
-        //         return res;
-        //     }
-        //
-        //     if (util.isObject(o)) {
-        //
-        //         const res = {};
-        //         // for (var key in o) {
-        //         //     res[lookup(key,keywords)] = lookup(o[key],keywords)
-        //         // }
-        //
-        //         Object.keys(o).forEach(key => res[lookup(key,keywords)] = lookup(o[key],keywords));
-        //
-        //         return res;
-        //     }
-        //
-        //     return o;
-        // };
-        
-
-        const values = [];
-
-
-        const varIndex = (tag) => {
-            let key = tag.substring(1, tag.length - 1);
-            if (key.indexOf("?") == 0) {
-                key = key
-                    .replace(/\"/gim, '\\"');
-
-                let postProcess;
-                key = key.replace(
-                    /(?:\?)(javascript|json|text|html|dps|xml|csv)/,
-                        m => {
-                            postProcess = m.substring(1);
-                            return ""
-                        }
-                    )
-                    .replace(/(^\?)|(\?$)/g, "")
-                    .replace(/\r/gim, "\\r")
-                    .replace(/\n/gim, "\\n")
-                    .replace(/\t/gim, "\\t")
-                    //.replace(/\"/gim, "'")
-
-                values.push(key);
-                return `context(value:^${values.length - 1});${postProcess}();`;
-            } else {
-                key = key.replace(/\"/gi, "'");
-                values.push(key);
-                return `^${values.length - 1}`;
-            }
-        };
-
-        const pushUrl = (tag) => {
-            values.push(tag);
-            return `^${values.length - 1}`;
-        };
-
-
-        const getUrl = (key) => values[Number(key.substring(1))];
-
-        const varValue = (tag) => {
-
-            let key = tag.substring(1);
-            let r = values[Number(key)];
-
-            while (r.indexOf("^") == 0) {
-                key = r.substring(1);
-                r = values[Number(key)]
-            }
-
-            // if (r.indexOf("?") == (r.length-1)) {
-            //     return '"' + r + '"'
-            // }
-
-            return `"${r}"`;
-        };
-
         let p = str
-            .replace(scriptRE, varIndex)
-            .replace(urlRE, pushUrl)
+            .replace(scriptRE, ParserUtils.varIndex)
+            .replace(urlRE, ParserUtils.pushUrl)
             .replace(bindableRE,"\"$1\"")
 
             .replace(lineCommentRE, "")
-            .replace(valuesRE, varIndex)
+            .replace(valuesRE, ParserUtils.varIndex)
             .replace(lineRE, "")
             .replace(inlineCommentRE, "")
-
-
 
             .replace(commandSplitRE, "$1;$2")
             .replace(nonbrackedParamsRE, "({$1})")
@@ -164,8 +75,6 @@ class ScriptParser {
             .replace(emptyPropsListRE, "({})")
             .replace(/\(/gim, ":")
             .replace(/\)/gim, "");
-
-        // console.log(p)
 
         try {
             p = p
@@ -200,48 +109,55 @@ class ScriptParser {
                 .join(";")
                 .replace(/;;/gi, ";");
 
-            // console.log("AFTER MAP ", p)
-            // p = p.replace(/\^[0-9]+/gim, varValue)
-
 
             const script = [];
             const cmd = p.split(";");
-            cmd.forEach(cm => {
-                // console.log('Parse:',"{" + cm.replace(/\^[0-9]+/gim, varValue) + "}")
-                const t = JSON.parse(`{${cm.replace(/\^[0-9]+/gim, varValue)}}`);
-                script.push(t)
+            cmd.forEach((cm, i) => {
+                try {
+                  const t = JSON.parse(`{${cm.replace(/\^[0-9]+/gim, ParserUtils.varValue)}}`);
+                  script.push(t)
+                } catch(e) {
+
+                  throw new ParserError(e.message, i, ErrorMapper.findLineOfCode(str, i));
+                }
 
             })
 
             const result = script.map(c => {
 
                 const res = {
-                    processId: lookup(Object.keys(c)[0],self.keywords),
+                    processId: ParserUtils.lookup(Object.keys(c)[0],self.keywords),
                     settings: c[Object.keys(c)[0]]
                 };
 
                 if(self.commands[res.processId]){
-                    res.settings = lookup(res.settings,self.commands[res.processId]["internal aliases"])
+                    res.settings = ParserUtils.lookup(res.settings, self.commands[res.processId]["internal aliases"])
                 }
                 return res;
             })
             .filter(c => c.processId);
-        } catch (e) {
-            throw new ParserError(e.toString());
-        }
 
         result.forEach(c => {
             if (c.processId == "context" && c.settings.value.replace) {
-                c.settings.value = c.settings.value.replace(urlLookup, getUrl)
+                c.settings.value = c.settings.value.replace(urlLookup, ParserUtils.getUrl)
             }
         })
 
         return result;
+      } catch (e) {
+        if (!(e instanceof ParserError))
+          throw new ParserError(e.toString());
+
+        else
+          throw e;
+      }
     }
 
+
     stringify(script) {
-        return script.map(c => `${c.processId}(${JSON.stringify(c.settings)})`).join(";")
+        return script.map(c => `${c.processId}(${JSON.stringify(c.settings)})`).join(";");
     }
+
 
     applyContext(template, context) {
         const getContextValue = function() {
@@ -252,10 +168,11 @@ class ScriptParser {
                 value = value[tag]
             })
 
-            return value
+            return value;
         };
-        return template.replace(/(?:\{\{\s*)([a-zA-Z0-9_\.]*)(?:\s*\}\})/gim, getContextValue)
+
+        return template.replace(/(?:\{\{\s*)([a-zA-Z0-9_\.]*)(?:\s*\}\})/gim, getContextValue);
     }
 }
 
-export default ScriptParser;
+module.exports = ScriptParser;
