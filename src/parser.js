@@ -9,7 +9,6 @@ const ErrorMapper = require('./utils/errorMapper');
 
 const valuesRE = /'((?:\\\\[\'bfnrt/\\\\]|\\\\u[a-fA-F0-9]{4}|[^\'\\\\])*)'|\"((?:\\\\[\"bfnrt/\\\\]|\\\\u[a-fA-F0-9]{4}|[^\"\\\\])*)\"/gim;
 
-// tabs and newlines
 const lineRE = /[\r\n\t\s]*/gim;
 
 const lineCommentRE = /\/\/[\w\S\ .\t\:\,;\'\"\(\)\{\}\[\]0-9-_]*(?:[\n\r]*)/gi;
@@ -80,31 +79,37 @@ class ScriptParser {
             p = p
                 .split(";")
                 .map(item => `${item};`)
-                .map(cmd => {
+                .map((cmd, i) => {
                     if (cmd == ";") {
                         return cmd
                     }
-                    // console.log("MAP ", cmd)
-                    let cmdName = cmd.match(commandNameRE)[0];
-                    cmdName = cmdName.substring(1, cmdName.length - 2)
-                    const params = cmd.match(paramsRE).map(item => {
+                    try {
+
+                      console.log("MAP ", cmd)
+                      let cmdName = cmd.match(commandNameRE)[0];
+                      cmdName = cmdName.substring(1, cmdName.length - 2)
+                      const params = cmd.match(paramsRE).map(item => {
                         if (item.match(defaultValueRE)) {
-                            var p;
-                            if (item.match(/\:\{\^/gi)) {
-                                p = item.substring(3, item.length - 3)
-                            } else if (item.match(/\:\{/gi)) {
-                                p = item.substring(2, item.length - 2)
-                            }
-                            return `:{"${self.defaultPropName[cmdName]}":${p}}`
+                          var p;
+                          if (item.match(/\:\{\^/gi)) {
+                            p = item.substring(3, item.length - 3)
+                          } else if (item.match(/\:\{/gi)) {
+                            p = item.substring(2, item.length - 2)
+                          }
+                          return `:{"${self.defaultPropName[cmdName]}":${p}}`
                         }
                         if (item.match(defaultStoredValueRE)) {
-                            var p = item.substring(1, item.length - 1)
-                            return `:{"${self.defaultPropName[cmdName]}":${p}}`
+                          var p = item.substring(1, item.length - 1)
+                          return `:{"${self.defaultPropName[cmdName]}":${p}}`
                         }
                         return item
-                    });
+                      });
 
-                    return `"${cmdName}"${params[0]}`
+                      return `"${cmdName}"${params[0]}`
+                    } catch (e) {
+
+                      throw new ParserError(e.message, i, ErrorMapper.findLineOfCode(str, i));
+                    }
                 })
                 .join(";")
                 .replace(/;;/gi, ";");

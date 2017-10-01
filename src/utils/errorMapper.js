@@ -9,21 +9,36 @@ class ErrorMapper {
   static findLineOfCode(strs, num) {
     const commandMap = strs.split('\n');
 
-    let iter = 0;
+    let iter = -1;
 
     for (let i = 0; i < commandMap.length; i++) {
 
       if (commandMap[i]) {
+        // identify commands like "<?html something ?>"
         if (commandMap[i].indexOf('<?') != -1) {
-          iter++;
+          iter += 2;
 
           if (iter == num || iter - 1 == num)
             return i;
 
           while ((commandMap[i].indexOf('?>') == -1) && (i < commandMap.length))
             i++;
+
+          continue;
         }
 
+        // skip comments
+        if (commandMap[i].trim().indexOf('//') == 0)
+          continue;
+
+        if (commandMap[i].indexOf('/*') != -1) {
+          while ((commandMap[i].indexOf('*/') == -1) && (i < commandMap.length))
+            i++;
+
+          continue;
+        }
+
+        // identify commands like "html(something)"
         if (commandMap[i].indexOf('(') != -1) {
           iter++;
 
@@ -32,6 +47,12 @@ class ErrorMapper {
 
           while ((commandMap[i].indexOf(')') == -1) && (i < commandMap.length))
             i++;
+
+          continue;
+        } else {
+          // if missing "()" after command
+          if ((commandMap[i].trim() != ')') && (commandMap[i].trim() != '?>'))
+            return i;
         }
       }
     }

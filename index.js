@@ -10,10 +10,11 @@ const parsed = new parser().config()
 <?html
  DB totals:<br/>datasets:&nbsp;
 ?>
+// test
 
 append({{datasets}})
 wrap(tag:'div', style:'margin:0')
-html()`
+html)`
   );
 
 console.log(parsed.length);
