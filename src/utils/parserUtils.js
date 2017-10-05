@@ -46,7 +46,8 @@ class ParserUtils {
               /(?:\?)(javascript|json|text|html|dps|xml|csv)/,
                   m => {
                       postProcess = m.substring(1);
-                      return ""
+
+                      return "";
                   }
               )
               .replace(/(^\?)|(\?$)/g, "")
@@ -86,7 +87,7 @@ class ParserUtils {
 
       while (r.indexOf("^") == 0) {
           key = r.substring(1);
-          r = values[Number(key)]
+          r = values[Number(key)];
       }
 
       return `"${r}"`;

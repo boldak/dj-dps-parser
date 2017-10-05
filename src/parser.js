@@ -85,27 +85,29 @@ class ScriptParser {
                     }
                     try {
 
-                      console.log("MAP ", cmd)
                       let cmdName = cmd.match(commandNameRE)[0];
-                      cmdName = cmdName.substring(1, cmdName.length - 2)
+                      cmdName = cmdName.substring(1, cmdName.length - 2);
+
                       const params = cmd.match(paramsRE).map(item => {
                         if (item.match(defaultValueRE)) {
-                          var p;
+                          let p;
                           if (item.match(/\:\{\^/gi)) {
-                            p = item.substring(3, item.length - 3)
+                            p = item.substring(3, item.length - 3);
                           } else if (item.match(/\:\{/gi)) {
-                            p = item.substring(2, item.length - 2)
+                            p = item.substring(2, item.length - 2);
                           }
+
                           return `:{"${self.defaultPropName[cmdName]}":${p}}`
                         }
                         if (item.match(defaultStoredValueRE)) {
-                          var p = item.substring(1, item.length - 1)
-                          return `:{"${self.defaultPropName[cmdName]}":${p}}`
+                          const p = item.substring(1, item.length - 1);
+
+                          return `:{"${self.defaultPropName[cmdName]}":${p}}`;
                         }
-                        return item
+                        return item;
                       });
 
-                      return `"${cmdName}"${params[0]}`
+                      return `"${cmdName}"${params[0]}`;
                     } catch (e) {
 
                       throw new ParserError(e.message, i, ErrorMapper.findLineOfCode(str, i));
@@ -120,7 +122,7 @@ class ScriptParser {
             cmd.forEach((cm, i) => {
                 try {
                   const t = JSON.parse(`{${cm.replace(/\^[0-9]+/gim, ParserUtils.varValue)}}`);
-                  script.push(t)
+                  script.push(t);
                 } catch(e) {
 
                   throw new ParserError(e.message, i, ErrorMapper.findLineOfCode(str, i));
@@ -138,6 +140,7 @@ class ScriptParser {
                 if(self.commands[res.processId]){
                     res.settings = ParserUtils.lookup(res.settings, self.commands[res.processId]["internal aliases"])
                 }
+
                 return res;
             })
             .filter(c => c.processId);
@@ -146,7 +149,7 @@ class ScriptParser {
             if (c.processId == "context" && c.settings.value.replace) {
                 c.settings.value = c.settings.value.replace(urlLookup, ParserUtils.getUrl)
             }
-        })
+        });
 
         return result;
       } catch (e) {
@@ -168,9 +171,10 @@ class ScriptParser {
         const getContextValue = function() {
             const tags = arguments[1].split(".");
             let value = context;
+
             tags.forEach(tag => {
                 tag = tag.trim();
-                value = value[tag]
+                value = value[tag];
             })
 
             return value;

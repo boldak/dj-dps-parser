@@ -12,9 +12,13 @@ const parsed = new parser().config()
 ?>
 // test
 
+/*
+ test
+*/
+
 append({{datasets}})
 wrap(tag:'div', style:'margin:0')
-html)`
+html()`
   );
 
 console.log(parsed.length);
