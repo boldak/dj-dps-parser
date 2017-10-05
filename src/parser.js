@@ -110,7 +110,7 @@ class ScriptParser {
                       return `"${cmdName}"${params[0]}`;
                     } catch (e) {
 
-                      throw new ParserError(e.message, i, ErrorMapper.findLineOfCode(str, i));
+                      throw new ParserError(e.message, i, ErrorMapper.findLineOfCommandStart(str, i));
                     }
                 })
                 .join(";")
@@ -125,7 +125,7 @@ class ScriptParser {
                   script.push(t);
                 } catch(e) {
 
-                  throw new ParserError(e.message, i, ErrorMapper.findLineOfCode(str, i));
+                  throw new ParserError(e.message, i, ErrorMapper.findLineOfCommandStart(str, i));
                 }
 
             })

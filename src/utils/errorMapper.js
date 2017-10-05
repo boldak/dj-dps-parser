@@ -6,8 +6,14 @@ class ErrorMapper {
 // function to find correct line of code, which contains invalid COMMAND
 // strs - script from input
 // num - number of invalid command
-  static findLineOfCode(strs, num) {
+  static findLineOfCommandStart(strs, num) {
+    if (num < 0)
+      return -1;
+
     const commandMap = strs.split('\n');
+
+    if (num >= commandMap.length)
+      return -1;
 
     let iter = -1;
 
@@ -56,6 +62,8 @@ class ErrorMapper {
         }
       }
     }
+
+    return -1;
   }
 }
 
