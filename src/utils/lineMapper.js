@@ -1,5 +1,4 @@
 
-// TODO refactor code
 
 class LineMapper {
 
