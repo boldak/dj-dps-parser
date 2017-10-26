@@ -18,7 +18,7 @@ class ParserUtils {
       if (util.isArray(o)) {
           const res = [];
           o.forEach(item => {
-              res.push(lookup(item,keywords))
+              res.push(this.lookup(item,keywords))
           });
 
           return res;
@@ -26,7 +26,7 @@ class ParserUtils {
 
       if (util.isObject(o)) {
           const res = {};
-          Object.keys(o).forEach(key => res[lookup(key,keywords)] = lookup(o[key],keywords));
+          Object.keys(o).forEach(key => res[this.lookup(key,keywords)] = this.lookup(o[key],keywords));
 
           return res;
       }

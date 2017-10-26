@@ -46,7 +46,7 @@ class ScriptParser {
         commands.forEach(command => {
             Object.keys(command.defaultProperty).forEach(k => this.defaultPropName[k] = command.defaultProperty[k]);
 
-            Object.keys(command.synonims).forEach(k => this.keywords[key] = command.synonims[key]);
+            Object.keys(command.synonims).forEach(k => this.keywords[k] = command.synonims[k]);
 
             this.commands[command.name] = command;
         });
