@@ -1,10 +1,9 @@
 
-// TODO refactor all code
 
 const util = require('util');
 const ParserError = require('./exceptions/parserError');
 const ParserUtils = require('./utils/parserUtils');
-const ErrorMapper = require('./utils/errorMapper');
+const LineMapper = require('./utils/lineMapper');
 
 
 const valuesRE = /'((?:\\\\[\'bfnrt/\\\\]|\\\\u[a-fA-F0-9]{4}|[^\'\\\\])*)'|\"((?:\\\\[\"bfnrt/\\\\]|\\\\u[a-fA-F0-9]{4}|[^\"\\\\])*)\"/gim;
@@ -110,7 +109,7 @@ class ScriptParser {
                       return `"${cmdName}"${params[0]}`;
                     } catch (e) {
 
-                      throw new ParserError(e.message, i, ErrorMapper.findLineOfCommandStart(str, i));
+                      throw new ParserError(e.message, i, LineMapper.findLineOfCommandStart(str, i));
                     }
                 })
                 .join(";")
@@ -122,10 +121,11 @@ class ScriptParser {
             cmd.forEach((cm, i) => {
                 try {
                   const t = JSON.parse(`{${cm.replace(/\^[0-9]+/gim, ParserUtils.varValue)}}`);
+
                   script.push(t);
                 } catch(e) {
 
-                  throw new ParserError(e.message, i, ErrorMapper.findLineOfCommandStart(str, i));
+                  throw new ParserError(e.message, i, LineMapper.findLineOfCommandStart(str, i));
                 }
 
             })
@@ -138,17 +138,19 @@ class ScriptParser {
                 };
 
                 if(self.commands[res.processId]){
-                    res.settings = ParserUtils.lookup(res.settings, self.commands[res.processId]["internal aliases"])
+                    res.settings = ParserUtils.lookup(res.settings, self.commands[res.processId]["internal aliases"]);
                 }
 
                 return res;
             })
             .filter(c => c.processId);
 
-        result.forEach(c => {
-            if (c.processId == "context" && c.settings.value.replace) {
-                c.settings.value = c.settings.value.replace(urlLookup, ParserUtils.getUrl)
-            }
+            result.forEach((c, i) => {
+              if (c.processId == "context" && c.settings.value.replace) {
+                  c.settings.value = c.settings.value.replace(urlLookup, ParserUtils.getUrl);
+              }
+
+              c.line = LineMapper.findLineOfCommandStart(str, i);
         });
 
         return result;
@@ -182,6 +184,7 @@ class ScriptParser {
 
         return template.replace(/(?:\{\{\s*)([a-zA-Z0-9_\.]*)(?:\s*\}\})/gim, getContextValue);
     }
+
 }
 
 module.exports = ScriptParser;

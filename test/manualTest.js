@@ -20,4 +20,6 @@ wrap(tag:'div', style:'margin:0')
 html()`
   );
 
+console.log(parsed);
+
 console.log(parsed.length);

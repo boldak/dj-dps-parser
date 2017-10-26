@@ -1,7 +1,7 @@
 
 // TODO refactor code
 
-class ErrorMapper {
+class LineMapper {
 
 // function to find correct line of code, which contains invalid COMMAND
 // strs - script from input
@@ -25,7 +25,7 @@ class ErrorMapper {
           iter += 2;
 
           if (iter == num || iter - 1 == num)
-            return i;
+            return i + 1;
 
           while ((commandMap[i].indexOf('?>') == -1) && (i < commandMap.length))
             i++;
@@ -49,7 +49,7 @@ class ErrorMapper {
           iter++;
 
           if (iter == num)
-            return i;
+            return i + 1;
 
           while ((commandMap[i].indexOf(')') == -1) && (i < commandMap.length))
             i++;
@@ -58,7 +58,7 @@ class ErrorMapper {
         } else {
           // if missing "()" after command
           if ((commandMap[i].trim() != ')') && (commandMap[i].trim() != '?>'))
-            return i;
+            return i + 1;
         }
       }
     }
@@ -67,4 +67,4 @@ class ErrorMapper {
   }
 }
 
-module.exports = ErrorMapper;
+module.exports = LineMapper;
