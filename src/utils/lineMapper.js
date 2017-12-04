@@ -22,7 +22,7 @@ class LineMapper {
 
       if (commandMap[i]) {
         // skip comments
-        if (commandMap[i].trim().indexOf('//') == 0)
+        if (commandMap[i].trim().indexOf('/') == 0)
           continue;
 
         // identify commands like "<?html something ?>"
