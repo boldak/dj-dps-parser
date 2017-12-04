@@ -1,4 +1,4 @@
-const parser = require('../src/parser');
+const parser = require('../index');
 const ParserError = require('../src/exceptions/parserError');
 
 const scripts =

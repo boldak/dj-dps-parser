@@ -1,5 +1,5 @@
 
-const parser = require('../src/parser');
+const parser = require('../index');
 
 
 const parsed = new parser().config()
@@ -15,6 +15,8 @@ const parsed = new parser().config()
  test
 */
 
+url("test")
+
 append({{datasets}})
 wrap(tag:'div', style:'margin:0')
 html()`
@@ -22,4 +24,4 @@ html()`
 
 console.log(parsed);
 
-console.log(parsed.length);
+console.log(`parsed length: ${ parsed.length }`);
