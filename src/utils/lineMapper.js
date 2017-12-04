@@ -1,4 +1,6 @@
 
+const os = require('os');
+
 
 class LineMapper {
 
@@ -9,7 +11,7 @@ class LineMapper {
     if (num < 0)
       return -1;
 
-    const commandMap = strs.split('\n');
+    const commandMap = strs.split(os.EOL);
 
     if (num >= commandMap.length)
       return -1;
