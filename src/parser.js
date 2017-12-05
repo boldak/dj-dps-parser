@@ -4,6 +4,7 @@ const util = require('util');
 const ParserError = require('./exceptions/parserError');
 const ParserUtils = require('./utils/parserUtils');
 const LineMapper = require('./utils/lineMapper');
+const ParserPreprocessor = require('./parserPreprocessor');
 
 
 const valuesRE = /'((?:\\\\[\'bfnrt/\\\\]|\\\\u[a-fA-F0-9]{4}|[^\'\\\\])*)'|\"((?:\\\\[\"bfnrt/\\\\]|\\\\u[a-fA-F0-9]{4}|[^\"\\\\])*)\"/gim;
@@ -55,6 +56,8 @@ class ScriptParser {
 
     parse(str) {
         const self = this;
+
+        ParserPreprocessor.bracketsAnalizator(str);
 
         let p = str
             .replace(scriptRE, ParserUtils.varIndex)
@@ -123,6 +126,7 @@ class ScriptParser {
 
             const script = [];
             const cmd = p.split(";");
+
             cmd.forEach((cm, i) => {
                 try {
                     const t = JSON.parse(`{${cm.replace(/\^[0-9]+/gim, ParserUtils.varValue)}}`);

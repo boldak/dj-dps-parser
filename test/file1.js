@@ -9,7 +9,7 @@
 ////////////////////////////////////////////////
 
 
-lib(url:'https://dj-dps.herokuapp.com/api/extension', as:'def')
+lib(url:'https://dj-dps.herokuapp.com/api/extension', as:'def'
 load(cache:{{id}}, as:'json')
 set("news")
 
@@ -22,4 +22,3 @@ cache()
 select('$.data_id')
 set('res')
 get('res[0]')
- 
