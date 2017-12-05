@@ -31,12 +31,8 @@ class ParserPreprocessor {
         if (commandMap[i].indexOf('<?') != -1) {
           iter += 2;
 
-          while ((commandMap[i].indexOf('?>') == -1) && (i < commandMap.length)) {
+          while ((commandMap[i].indexOf('?>') == -1) && (i < commandMap.length))
             i++;
-
-            if ((commandMap[i].indexOf('(') != -1) || (commandMap[i].indexOf('<?') != -1))
-              throw new ParserError("invalid number of brackets", iter + 1, i);
-          }
 
           continue;
         }
@@ -53,11 +49,7 @@ class ParserPreprocessor {
           }
 
           continue;
-        } // else {
-          // if missing "()" after command
-          // if ((commandMap[i].trim() != ')') && (commandMap[i].trim() != '?>'))
-            // throw new ParserError("invalid number of brackets", iter, i + 1);
-        // }
+        }
       }
     }
     return;
