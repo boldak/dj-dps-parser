@@ -22,11 +22,18 @@ class LineMapper {
 
       if (commandMap[i]) {
         // skip comments
+        if (commandMap[i].indexOf('/*') != -1) {
+          while ((commandMap[i].indexOf('*/') == -1) && (i < commandMap.length))
+            i++;
+
+          continue;
+        }
+
         if (commandMap[i].trim().indexOf('/') == 0)
           continue;
 
-        if (commandMap[i].indexOf('/*') != -1) {
-          while ((commandMap[i].indexOf('*/') == -1) && (i < commandMap.length))
+        if (commandMap[i].indexOf('<*') != -1) {
+          while ((commandMap[i].indexOf('*>') == -1) && (i < commandMap.length))
             i++;
 
           continue;
