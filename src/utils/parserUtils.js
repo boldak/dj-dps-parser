@@ -1,4 +1,6 @@
+
 const util = require('util');
+// const refUtils = require('dj-utils').refference;
 
 const values = [];
 
@@ -46,8 +48,7 @@ class ParserUtils {
               /(?:\?)(javascript|json|text|html|dps|xml|csv)/,
                   m => {
                       postProcess = m.substring(1);
-
-                      return "";
+                      return ""
                   }
               )
               .replace(/(^\?)|(\?$)/g, "")
@@ -87,10 +88,18 @@ class ParserUtils {
 
       while (r.indexOf("^") == 0) {
           key = r.substring(1);
-          r = values[Number(key)];
+          r = values[Number(key)]
       }
 
+      // if (r.indexOf("?") == (r.length-1)) {
+      //     return '"' + r + '"'
+      // }
+
       return `"${r}"`;
+  }
+
+  parseRef(refStr) {
+    // return refUtils.parse(refStr);
   }
 }
 

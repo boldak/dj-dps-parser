@@ -1,6 +1,5 @@
 
 const ParserError = require('./exceptions/parserError');
-const os = require('os');
 
 
 class ParserPreprocessor {
@@ -8,10 +7,8 @@ class ParserPreprocessor {
   constructor() {
   }
 
-  static bracketsAnalizator(strs) {
+  static bracketsAnalizator(commandMap) {
     let iter = -1;
-
-    const commandMap = strs.split(os.EOL);
 
     for (let i = 0; i < commandMap.length; i++) {
 

@@ -16,7 +16,7 @@ const parsed = new parser().config()
 
 
 lib(url:'https://dj-dps.herokuapp.com/api/extension', as:'def')
-load(cache:{{id}}, as:'json'
+load(cache:{{id}}, as:'json')
 set("news")
 
 call(

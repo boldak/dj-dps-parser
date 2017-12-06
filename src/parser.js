@@ -1,10 +1,12 @@
 
 
 const util = require('util');
+const os = require('os');
 const ParserError = require('./exceptions/parserError');
 const ParserUtils = require('./utils/parserUtils');
 const LineMapper = require('./utils/lineMapper');
-const ParserPreprocessor = require('./parserPreprocessor');
+const ParserPreProcessor = require('./parserPreprocessor');
+const ParserPostProcessor = require('./parserPostprocessor');
 
 
 const valuesRE = /'((?:\\\\[\'bfnrt/\\\\]|\\\\u[a-fA-F0-9]{4}|[^\'\\\\])*)'|\"((?:\\\\[\"bfnrt/\\\\]|\\\\u[a-fA-F0-9]{4}|[^\"\\\\])*)\"/gim;
@@ -56,8 +58,9 @@ class ScriptParser {
 
     parse(str) {
         const self = this;
+        const strs = str.split(os.EOL);
 
-        ParserPreprocessor.bracketsAnalizator(str);
+        ParserPreProcessor.bracketsAnalizator(strs);
 
         let p = str
             .replace(scriptRE, ParserUtils.varIndex)
@@ -117,7 +120,7 @@ class ScriptParser {
                         return `"${cmdName}"${params[0]}`;
                     } catch (e) {
 
-                        throw new ParserError(e.message, i, LineMapper.findLineOfCommandStart(str, i));
+                        throw new ParserError(e.message, i, LineMapper.findLineOfCommandStart(strs, i));
                     }
                 })
                 .join(";")
@@ -134,7 +137,7 @@ class ScriptParser {
                     script.push(t);
                 } catch(e) {
 
-                    throw new ParserError(e.message, i, LineMapper.findLineOfCommandStart(str, i));
+                    throw new ParserError(e.message, i, LineMapper.findLineOfCommandStart(strs, i));
                 }
 
             })
@@ -154,15 +157,11 @@ class ScriptParser {
             })
             .filter(c => c.processId);
 
-            result.forEach((c, i) => {
-                if (c.processId == "context" && c.settings.value.replace) {
-                    c.settings.value = c.settings.value.replace(urlLookup, ParserUtils.getUrl);
-                }
+            ParserPostProcessor.processContext(result, urlLookup);
+            ParserPostProcessor.processLineNumbers(result, strs);
+            ParserPostProcessor.processRefferences(result, strs);
 
-                c.line = LineMapper.findLineOfCommandStart(str, i);
-        });
-
-        return result;
+            return result;
       } catch (e) {
         if (!(e instanceof ParserError))
           throw new ParserError(e.toString());

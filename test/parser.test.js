@@ -1,5 +1,9 @@
+
+
+const os = require('os');
 const parser = require('../index');
 const ParserError = require('../src/exceptions/parserError');
+
 
 const scripts =
 `set('tags')
