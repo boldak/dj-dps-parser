@@ -1,7 +1,8 @@
 
-// TODO refactor code
+const os = require('os');
 
-class ErrorMapper {
+
+class LineMapper {
 
 // function to find correct line of code, which contains invalid COMMAND
 // strs - script from input
@@ -10,7 +11,7 @@ class ErrorMapper {
     if (num < 0)
       return -1;
 
-    const commandMap = strs.split('\n');
+    const commandMap = strs.split(os.EOL);
 
     if (num >= commandMap.length)
       return -1;
@@ -20,25 +21,32 @@ class ErrorMapper {
     for (let i = 0; i < commandMap.length; i++) {
 
       if (commandMap[i]) {
-        // identify commands like "<?html something ?>"
-        if (commandMap[i].indexOf('<?') != -1) {
-          iter += 2;
-
-          if (iter == num || iter - 1 == num)
-            return i;
-
-          while ((commandMap[i].indexOf('?>') == -1) && (i < commandMap.length))
+        // skip comments
+        if (commandMap[i].indexOf('/*') != -1) {
+          while ((commandMap[i].indexOf('*/') == -1) && (i < commandMap.length))
             i++;
 
           continue;
         }
 
-        // skip comments
-        if (commandMap[i].trim().indexOf('//') == 0)
+        if (commandMap[i].trim().indexOf('/') == 0)
           continue;
 
-        if (commandMap[i].indexOf('/*') != -1) {
-          while ((commandMap[i].indexOf('*/') == -1) && (i < commandMap.length))
+        if (commandMap[i].indexOf('<*') != -1) {
+          while ((commandMap[i].indexOf('*>') == -1) && (i < commandMap.length))
+            i++;
+
+          continue;
+        }
+
+        // identify commands like "<?html something ?>"
+        if (commandMap[i].indexOf('<?') != -1) {
+          iter += 2;
+
+          if (iter == num || iter - 1 == num)
+            return i + 1;
+
+          while ((commandMap[i].indexOf('?>') == -1) && (i < commandMap.length))
             i++;
 
           continue;
@@ -49,7 +57,7 @@ class ErrorMapper {
           iter++;
 
           if (iter == num)
-            return i;
+            return i + 1;
 
           while ((commandMap[i].indexOf(')') == -1) && (i < commandMap.length))
             i++;
@@ -58,7 +66,7 @@ class ErrorMapper {
         } else {
           // if missing "()" after command
           if ((commandMap[i].trim() != ')') && (commandMap[i].trim() != '?>'))
-            return i;
+            return i + 1;
         }
       }
     }
@@ -67,4 +75,4 @@ class ErrorMapper {
   }
 }
 
-module.exports = ErrorMapper;
+module.exports = LineMapper;
