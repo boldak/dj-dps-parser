@@ -1,6 +1,7 @@
 
 const util = require('util');
-// const refUtils = require('dj-utils').refference;
+// TODO comment when launch
+const refUtils = require('dj-utils').refference;
 
 const values = [];
 
@@ -91,15 +92,12 @@ class ParserUtils {
           r = values[Number(key)]
       }
 
-      // if (r.indexOf("?") == (r.length-1)) {
-      //     return '"' + r + '"'
-      // }
-
       return `"${r}"`;
   }
 
   parseRef(refStr) {
-    // return refUtils.parse(refStr);
+    // TODO comment when launch
+    return refUtils.parse(refStr);
   }
 }
 

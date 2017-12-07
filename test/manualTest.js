@@ -4,20 +4,23 @@ const parser = require('../index');
 
 const parsed = new parser().config()
   .parse(
-    `// <?json
-//     "58d140c6087c0e04000ecd7b"
-// ?>
-// set('id')
-// <?json
-//     ["трамп","українськ","вася"]
-// ?>
-// set('tags')
+    `<?json
+    "58d140c6087c0e04000ecd7b"
+?>
+set('id')
+<?json
+    ["трамп","українськ","вася"]
+?>
+set('tags')
 ////////////////////////////////////////////////
 
 
 lib(url:'https://dj-dps.herokuapp.com/api/extension', as:'def')
 load(cache:{{id}}, as:'json')
 set("news")
+
+// TODO ask about this
+ref($scope:"nameFromScope")
 
 call(
     ext:'def.load.rss.newsWordTable',
