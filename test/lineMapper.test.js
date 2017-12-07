@@ -21,20 +21,21 @@ wrap(
 )
 html()`;
 
+const script = scripts.parse('\n');
 
 test('positive test of command mapping', () => {
-  expect(LineMapper.findLineOfCommandStart(scripts.split(os.EOL), 0)).toBe(1);
+  expect(LineMapper.findLineOfCommandStart(script, 0)).toBe(1);
 
-  expect(LineMapper.findLineOfCommandStart(scripts.split(os.EOL), 3)).toBe(12);
-  expect(LineMapper.findLineOfCommandStart(scripts.split(os.EOL), 5)).toBe(16);
+  expect(LineMapper.findLineOfCommandStart(script, 3)).toBe(12);
+  expect(LineMapper.findLineOfCommandStart(script, 5)).toBe(16);
 
-  expect(LineMapper.findLineOfCommandStart(scripts.split(os.EOL), 1)).toBe(3);
-  expect(LineMapper.findLineOfCommandStart(scripts.split(os.EOL), 2)).toBe(3);
+  expect(LineMapper.findLineOfCommandStart(script, 1)).toBe(3);
+  expect(LineMapper.findLineOfCommandStart(script, 2)).toBe(3);
 });
 
 test('negative test of command mapping', () => {
-  expect(LineMapper.findLineOfCommandStart(scripts.split(os.EOL), -1)).toBe(-1);
-  expect(LineMapper.findLineOfCommandStart(scripts.split(os.EOL), 100)).toBe(-1);
+  expect(LineMapper.findLineOfCommandStart(script, -1)).toBe(-1);
+  expect(LineMapper.findLineOfCommandStart(script, 100)).toBe(-1);
 
-  expect(LineMapper.findLineOfCommandStart(scripts.split(os.EOL), 20)).toBe(-1);
+  expect(LineMapper.findLineOfCommandStart(script, 20)).toBe(-1);
 });
