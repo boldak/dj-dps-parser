@@ -1,7 +1,7 @@
 
 const util = require('util');
 // TODO comment when launch
-const refUtils = require('dj-utils').refference;
+const refUtils = require('../../../dj-utils').reference;
 
 const values = [];
 
