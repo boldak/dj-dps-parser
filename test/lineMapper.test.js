@@ -21,7 +21,7 @@ wrap(
 )
 html()`;
 
-const script = scripts.parse('\n');
+const script = scripts.split('\n');
 
 test('positive test of command mapping', () => {
   expect(LineMapper.findLineOfCommandStart(script, 0)).toBe(1);
