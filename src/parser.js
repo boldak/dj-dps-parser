@@ -31,6 +31,8 @@ const bindableRE = /({{[a-zA-Z\$\_]+[a-zA-Z0-9\$\_\.\[\]\"\']*}})/g;
 const urlRE = /((https?:\/\/)([a-zA-Z0-9]+[a-zA-Z0-9_-]*)(:\d{0,4})?([a-zA-Z0-9_\-\/\%\=\{\}\?\+\&\.\:]*))/g;
 
 class ScriptParser {
+    static ErrorMapper : ErrorMapper
+    
     constructor() {
         this.defaultPropName = {}
         this.keywords = {};

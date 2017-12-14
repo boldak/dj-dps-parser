@@ -65,6 +65,11 @@ class ErrorMapper {
 
     return -1;
   }
+
+  static findTextOfCommand(strs, num) {
+    let index = ErrorMapper.findLineOfCommandStart(strs, num);
+    return strs.split('\n')[index];
+  }
 }
 
 module.exports = ErrorMapper;
